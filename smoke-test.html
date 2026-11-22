@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>触碰风味 · 浏览器验收</title>
+  <style>
+    body { padding: 24px; font-family: monospace; background: #f6f0e4; color: #10251f; }
+    iframe { width: 390px; height: 760px; border: 1px solid #10251f; background: white; }
+    .pass { color: #176b4d; font-weight: 700; }
+    .fail { color: #b8341c; font-weight: 700; }
+  </style>
+</head>
+<body>
+  <h1>浏览器验收</h1>
+  <pre id="result">RUNNING</pre>
+  <iframe id="appFrame" src="index.html?type=game&series=coffee&flavor=brazil&lot=BRA-03"></iframe>
+  <script>
+    (() => {
+      const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+      const output = document.querySelector("#result");
+      const frame = document.querySelector("#appFrame");
+      const checks = [];
+
+      function check(name, condition) {
+        checks.push(`${condition ? "PASS" : "FAIL"} ${name}`);
+      }
+
+      async function waitForSelector(target, selector, timeoutMs = 4000) {
+        const started = Date.now();
+        while (Date.now() - started < timeoutMs) {
+          try {
+            if (target.contentDocument?.querySelector(selector)) {
+              return target.contentDocument;
+            }
+          } catch {
+            // The iframe may still be on its initial opaque about:blank document.
+          }
+          await wait(50);
+        }
+        throw new Error(`等待 ${selector} 超时`);
+      }
+
+      async function waitForRandomSelection(target, timeoutMs = 4000) {
+        const started = Date.now();
+        while (Date.now() - started < timeoutMs) {
+          try {
+            const doc = target.contentDocument;
+            const query = new URLSearchParams(target.contentWindow.location.search);
+            const flavor = query.get("flavor");
+            if (doc?.querySelector("#flavorFacts b") && query.get("type") === "game" && flavor) {
+              return { doc, flavor, name: doc.querySelector("#flavorName")?.textContent || "" };
+            }
+          } catch {
+            // The random iframe is still navigating.
+          }
+          await wait(50);
+        }
+        throw new Error("等待随机口味解析超时");
+      }
+
+      async function run() {
+        const doc = await waitForSelector(frame, ".option-button");
+        const win = frame.contentWindow;
+        check("游戏首题已渲染", Boolean(doc.querySelector(".option-button")));
+        check("巴西标签内容正确", doc.querySelector("#flavorName")?.textContent === "巴西");
+        check("移动视口无横向溢出", doc.documentElement.scrollWidth <= win.innerWidth + 1);
+        check(
+          "四个内容类型均在视口内",
+          [...doc.querySelectorAll(".mode-button")].every(
+            (button) => button.getBoundingClientRect().right <= win.innerWidth + 1
+          )
+        );
+
+        for (let round = 0; round < 3; round += 1) {
+          const firstOption = doc.querySelector(".option-button");
+          check(`第 ${round + 1} 题可点击`, Boolean(firstOption));
+          firstOption?.click();
+          await wait(650);
+        }
+
+        check("三轮后出现结果页", Boolean(doc.querySelector(".result-panel")));
+        check("风味卡已解锁", doc.querySelector("#collectionCount")?.textContent === "1 / 4");
+
+        for (const view of ["video", "image", "text"]) {
+          doc.querySelector(`[data-view="${view}"]`)?.click();
+          await wait(80);
+          check(`${view} 视图可切换`, doc.querySelector(`#view-${view}`)?.classList.contains("is-active"));
+        }
+
+        check("视频文件已配置", doc.querySelector("#featureVideo source")?.getAttribute("src") === "assets/flavor-film.mp4");
+        check("图片文件已配置", doc.querySelector("#featureImage")?.getAttribute("src") === "assets/poster.svg");
+        check("收藏记录使用本地存储", typeof win.localStorage.getItem === "function");
+
+        const randomFrame = document.createElement("iframe");
+        randomFrame.src = "index.html?run=1";
+        document.body.append(randomFrame);
+        const firstRandom = await waitForRandomSelection(randomFrame);
+        const knownFlavors = ["埃塞俄比亚", "哥伦比亚", "巴西", "云南"];
+        check("随机入口已选择四款之一", knownFlavors.includes(firstRandom.name));
+        check("随机入口地址已固定口味", Boolean(firstRandom.flavor));
+        check("四款风味资料字段完整", firstRandom.doc.querySelectorAll("#flavorFacts b").length === 4);
+
+        randomFrame.src = "about:blank";
+        await wait(100);
+        randomFrame.src = "index.html?run=2";
+        const secondRandom = await waitForRandomSelection(randomFrame);
+        check("连续两次随机不会重复", secondRandom.flavor !== firstRandom.flavor);
+
+        const qrFrame = document.createElement("iframe");
+        qrFrame.src = "qr.html?url=https%3A%2F%2Fexample.com%2Fnfc%2F%3Ftype%3Dgame";
+        document.body.append(qrFrame);
+        const qrDoc = await waitForSelector(qrFrame, "#qrcode canvas, #qrcode img");
+        check("二维码已生成", Boolean(qrDoc.querySelector("#qrcode canvas, #qrcode img")));
+
+        const failed = checks.filter((line) => line.startsWith("FAIL"));
+        output.textContent = `${failed.length === 0 ? "RESULT PASS" : "RESULT FAIL"}\n${checks.join("\n")}`;
+        output.className = failed.length === 0 ? "pass" : "fail";
+        document.documentElement.dataset.result = failed.length === 0 ? "PASS" : "FAIL";
+      }
+
+      window.addEventListener("error", (event) => {
+        output.textContent = `RESULT FAIL\nFAIL 未捕获错误：${event.message}`;
+        output.className = "fail";
+        document.documentElement.dataset.result = "FAIL";
+      });
+
+      run().catch((error) => {
+        output.textContent = `RESULT FAIL\nFAIL ${error.message}`;
+        output.className = "fail";
+        document.documentElement.dataset.result = "FAIL";
+      });
+    })();
+  </script>
+</body>
+</html>
