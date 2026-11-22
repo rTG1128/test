@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" role="img" aria-labelledby="title desc">
+  <title id="title">触碰风味咖啡包装概念海报</title>
+  <desc id="desc">深绿色背景上的橙色和酸性绿色咖啡包装视觉</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#0d211b"/>
+      <stop offset="1" stop-color="#25594d"/>
+    </linearGradient>
+    <linearGradient id="box" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ff8d5e"/>
+      <stop offset="1" stop-color="#e74720"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="26" stdDeviation="24" flood-color="#06110d" flood-opacity=".45"/>
+    </filter>
+    <pattern id="grain" width="12" height="12" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1" fill="#fff" opacity=".08"/>
+      <circle cx="9" cy="7" r=".7" fill="#fff" opacity=".05"/>
+    </pattern>
+  </defs>
+  <rect width="1200" height="900" fill="url(#bg)"/>
+  <circle cx="960" cy="145" r="250" fill="#cde46e" opacity=".95"/>
+  <circle cx="960" cy="145" r="190" fill="none" stroke="#10251f" stroke-width="2" opacity=".32"/>
+  <path d="M0 760 C210 600, 330 880, 590 700 S930 560,1200 720 V900 H0Z" fill="#173d33"/>
+  <g opacity=".28" fill="none" stroke="#fffaf0">
+    <circle cx="120" cy="145" r="70"/>
+    <circle cx="120" cy="145" r="95"/>
+    <circle cx="120" cy="145" r="120"/>
+  </g>
+  <text x="90" y="105" fill="#fffaf0" font-family="monospace" font-size="22" letter-spacing="7">NFC / TOUCH / TASTE</text>
+  <text x="76" y="322" fill="#fffaf0" font-family="Georgia,serif" font-size="92" font-weight="700">触碰风味</text>
+  <text x="82" y="378" fill="#cde46e" font-family="Georgia,serif" font-size="36" font-style="italic">Flavour, unlocked by a touch.</text>
+  <g filter="url(#shadow)" transform="rotate(-7 530 640)">
+    <path d="M265 380 L735 335 L785 760 L310 812Z" fill="url(#box)"/>
+    <path d="M265 380 L735 335 L755 482 L282 535Z" fill="#ffe0c7" opacity=".17"/>
+    <rect x="340" y="454" width="350" height="236" rx="24" fill="#fffaf0"/>
+    <text x="380" y="520" fill="#10251f" font-family="monospace" font-size="19" letter-spacing="5">ORIGIN / 01</text>
+    <text x="378" y="585" fill="#10251f" font-family="Georgia,serif" font-size="56" font-weight="700">ETHIOPIA</text>
+    <text x="380" y="626" fill="#62726c" font-family="sans-serif" font-size="24">FLORAL · CITRUS · HONEY</text>
+    <circle cx="634" cy="638" r="36" fill="#10251f"/>
+    <path d="M628 619 C644 629 646 645 631 654 C617 642 615 628 628 619Z" fill="none" stroke="#cde46e" stroke-width="3"/>
+    <path d="M630 623 C629 635 628 645 629 651" fill="none" stroke="#cde46e" stroke-width="2"/>
+  </g>
+  <g transform="translate(865 585)">
+    <circle cx="80" cy="80" r="80" fill="#cde46e" stroke="#10251f" stroke-width="3"/>
+    <text x="80" y="70" text-anchor="middle" fill="#10251f" font-family="monospace" font-size="15" letter-spacing="4">HOLD NEAR</text>
+    <text x="80" y="108" text-anchor="middle" fill="#10251f" font-family="monospace" font-size="31" font-weight="700">NFC</text>
+    <path d="M50 150 C75 128 85 97 89 48" fill="none" stroke="#cde46e" stroke-width="2" stroke-dasharray="6 7" opacity=".6"/>
+  </g>
+  <rect width="1200" height="900" fill="url(#grain)"/>
+  <text x="86" y="844" fill="#fffaf0" opacity=".65" font-family="monospace" font-size="18" letter-spacing="4">PRINTED PACKAGE × DIGITAL COLLECTION</text>
+</svg>
